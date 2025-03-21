@@ -11,21 +11,25 @@ pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 const MyBook: React.FC = () => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pdfUrl] = useState("/pdf/secondary.pdf");
-  const [bookSize, setBookSize] = useState({ width: 900, height: 1500 });
+  const [bookSize, setBookSize] = useState({ width: 900, height: 1200 });
 
   useEffect(() => {
     const updateSize = () => {
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
 
-      const maxWidth = Math.min(screenWidth * 0.9, 900);
-      const maxHeight = Math.min(screenHeight * 0.9, 1500);
+      // Dynamically adjust size with safe min/max limits
+      const maxWidth = Math.min(screenWidth * 0.9, 700); // Max: 90% of screen width
+      const maxHeight = Math.min(screenHeight * 0.9, 1500); // Max: 90% of screen height
 
-      setBookSize({ width: maxWidth, height: maxHeight });
+      const width = Math.max(400, maxWidth); // Prevents book from getting too small
+      const height = Math.max(500, maxHeight); // Prevents book from getting too small
+
+      setBookSize({ width, height });
     };
 
-    updateSize();
     window.addEventListener("resize", updateSize);
+    updateSize(); // Call on mount
 
     return () => window.removeEventListener("resize", updateSize);
   }, []);
@@ -36,34 +40,38 @@ const MyBook: React.FC = () => {
         file={pdfUrl}
         onLoadSuccess={({ numPages }) => setNumPages(numPages)}
       >
-        {numPages && (
-          <HTMLFlipBook
-            width={bookSize.width}
-            height={bookSize.height}
-            size="stretch"
-            minWidth={600}
-            maxWidth={1200}
-            minHeight={800}
-            maxHeight={900}
-            drawShadow={true}
-            showCover={true}
-            flippingTime={700}
-            className="book"
-          >
-            {Array.from({ length: numPages }, (_, index) => (
-              <div key={index} className="flip-page">
-                <PdfPage
-                  pageNumber={index + 1}
-                  width={bookSize.width / 1.5} // Adjust width for two pages
-                  height={bookSize.height} // Adjust height to fit properly
-                  renderTextLayer={false}
-                  renderAnnotationLayer={false}
-                  className="pdf-page"
-                />
-              </div>
-            ))}
-          </HTMLFlipBook>
-        )}
+        <div>
+          {numPages && (
+            <div className="flex justify-center">
+              <HTMLFlipBook
+                width={bookSize.width}
+                height={bookSize.height + 50}
+                size="stretch"
+                minWidth={500}
+                maxWidth={700}
+                minHeight={600}
+                maxHeight={900}
+                drawShadow={true}
+                showCover={true}
+                flippingTime={700}
+                className="book"
+              >
+                {Array.from({ length: numPages }, (_, index) => (
+                  <div key={index} className="flip-page">
+                    <PdfPage
+                      pageNumber={index + 1}
+                      height={bookSize.height}
+                      width={bookSize.width} // Slightly smaller to fit well
+                      renderTextLayer={false}
+                      renderAnnotationLayer={false}
+                      className="pdf-page"
+                    />
+                  </div>
+                ))}
+              </HTMLFlipBook>
+            </div>
+          )}
+        </div>
       </Document>
     </div>
   );
