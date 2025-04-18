@@ -13,26 +13,26 @@ const MyBook: React.FC = () => {
   const [pdfUrl] = useState("/pdf/secondary.pdf");
   const [bookSize, setBookSize] = useState({ width: 900, height: 1200 });
 
-  useEffect(() => {
-    const updateSize = () => {
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
+  // useEffect(() => {
+  //   const updateSize = () => {
+  //     const screenWidth = window.innerWidth;
+  //     const screenHeight = window.innerHeight;
 
-      // Dynamically adjust size with safe min/max limits
-      const maxWidth = Math.min(screenWidth * 0.9, 700); // Max: 90% of screen width
-      const maxHeight = Math.min(screenHeight * 0.9, 1500); // Max: 90% of screen height
+  //     // Dynamically adjust size with safe min/max limits
+  //     const maxWidth = Math.min(screenWidth * 0.9, 700); // Max: 90% of screen width
+  //     const maxHeight = Math.min(screenHeight * 0.9, 1500); // Max: 90% of screen height
 
-      const width = Math.max(400, maxWidth); // Prevents book from getting too small
-      const height = Math.max(500, maxHeight); // Prevents book from getting too small
+  //     const width = Math.max(400, maxWidth); // Prevents book from getting too small
+  //     const height = Math.max(500, maxHeight); // Prevents book from getting too small
 
-      setBookSize({ width, height });
-    };
+  //     setBookSize({ width, height });
+  //   };
 
-    window.addEventListener("resize", updateSize);
-    updateSize(); // Call on mount
+  //   window.addEventListener("resize", updateSize);
+  //   updateSize(); // Call on mount
 
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
+  //   return () => window.removeEventListener("resize", updateSize);
+  // }, []);
 
   return (
     <div className="flipbook-container">
@@ -45,7 +45,7 @@ const MyBook: React.FC = () => {
             <div className="flex justify-center">
               <HTMLFlipBook
                 width={bookSize.width}
-                height={bookSize.height + 50}
+                height={bookSize.height - 40}
                 size="stretch"
                 minWidth={500}
                 maxWidth={700}
@@ -61,7 +61,7 @@ const MyBook: React.FC = () => {
                     <PdfPage
                       pageNumber={index + 1}
                       height={bookSize.height}
-                      width={bookSize.width} // Slightly smaller to fit well
+                      width={bookSize.width - 200} // Slightly smaller to fit well
                       renderTextLayer={false}
                       renderAnnotationLayer={false}
                       className="pdf-page"
